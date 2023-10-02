@@ -90,4 +90,14 @@ export default class Gameboard {
         return true
     }
 
+    allShipsSunk() {
+        for (const ship of this.ships) {
+            if (!ship.isSunk()) {
+                return false
+            }
+        }
+
+        return true
+    }
+
 }

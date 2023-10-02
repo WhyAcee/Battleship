@@ -7,3 +7,4 @@ const ship = new Ship(3);
 gameboard.placeShip(ship, 2, 3, 'horizontal');
 const result = gameboard.receiveAttack(2, 3);
 console.log(result)
+ 
