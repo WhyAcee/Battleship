@@ -8,6 +8,20 @@ export default class Gameboard {
         this.ships = [];
     }
 
+    createGrid(containerId, rows, cols) {
+        const container = document.getElementById(containerId)
+
+        for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < cols; col++) {
+                const cell = document.createElement('div')
+                cell.classList.add('grid-cell');
+                cell.dataset.row = row;
+                cell.dataset.col = col;
+                container.appendChild(cell)
+            } 
+        }
+    }
+
     placeShip(ship, row, col, orientation) {
         // Check of Ship placement is valid
         if (!this.isValidPlacement(ship, row, col, orientation)) {
