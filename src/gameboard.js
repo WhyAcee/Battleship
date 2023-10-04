@@ -1,9 +1,10 @@
 import Ship from "./ship";
 
 export default class Gameboard {
-    constructor(rows, cols) {
+    constructor(rows, cols, container) {
         this.rows = rows;
         this.cols = cols;
+        this.container = container
         this.grid = Array(rows).fill().map(() => Array(cols).fill(null));
         this.ships = [];
     }
@@ -23,6 +24,7 @@ export default class Gameboard {
     }
 
     placeShip(ship, row, col, orientation) {
+        this.orientation = orientation
         // Check of Ship placement is valid
         if (!this.isValidPlacement(ship, row, col, orientation)) {
             return false
@@ -38,7 +40,7 @@ export default class Gameboard {
                 this.grid[row + i][col] = ship
             }
         }
-
+     
         // Update ship properties
         ship.position = { row, col };
         ship.orientation = orientation;
@@ -56,6 +58,7 @@ export default class Gameboard {
         }
 
         const shipIndex = this.grid[row][col];
+        console.log(this.grid)
 
         //Check if there's a ship in the cell
         if (shipIndex !== null) {
@@ -64,6 +67,8 @@ export default class Gameboard {
 
             // Mark the cell as 'hit'
             this.grid[row][col] = 'hit';
+            console.log(this.grid[row][col])
+
 
             // Check if the ship has been sunk
             if (shipIndex.isSunk()) {
@@ -74,8 +79,9 @@ export default class Gameboard {
 
         } else {
             this.grid[row][col] = 'miss';
-            return 'miss';
+            return 'miss'
         }
+        
     }
 
     isValidPlacement(ship, row, col, orientation) {
@@ -102,6 +108,23 @@ export default class Gameboard {
         }
 
         return true
+    }
+
+    displayShipOnGrid(ship) {
+        const { row, col } = ship.position
+        const orientation = ship.orientation
+        
+        if (orientation === 'horizontal') {
+            for (let i = 0; i < ship.length; i++) {
+                const cell = this.container.querySelector(`[data-row="${row}"][data-col="${col + i}"]`)
+                cell.classList.add('ship-cell')
+            }
+        } else if (orientation === 'vertical') {
+            for (let i = 0; i < ship.length; i++) {
+                const cell = this.container.querySelector(`[data-row="${row + i}"][data-col="${col}"]`)
+                cell.classList.add('ship-cell')
+            }
+        }
     }
 
     allShipsSunk() {

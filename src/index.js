@@ -47,9 +47,11 @@ function CreateTitleScreen() {
 
 function gameLoop(name) {
 
-    // Create game boards
-    const playerGameboard = new Gameboard(10, 10)
-    const computerGameboard = new Gameboard(10, 10)
+    // Create game boards 
+    const playerGameboardContainer = document.getElementById('player-gameboard');
+    const computerGameboardContainer = document.getElementById('computer-gameboard');
+    const playerGameboard = new Gameboard(10, 10, playerGameboardContainer)
+    const computerGameboard = new Gameboard(10, 10, computerGameboardContainer)
 
     // Create Players
     const player = new Player(name, playerGameboard, computerGameboard)
@@ -58,8 +60,31 @@ function gameLoop(name) {
     let gameIsOver = false;
     let currentPlayer = player;
 
+    // Display game boards
     playerGameboard.createGrid('player-gameboard', 10, 10)
-    computerGameboard.createGrid('computer-gameboard', 10, 10)
+    computerGameboard.createGrid('computer-gameboard', 10, 10) 
+   
+
+    message.textContent = `Place your ship ${name}.`
+
+    // Create ships
+    const carrier = new Ship(5)
+    const battleship = new Ship(4)
+    const cruiser = new Ship(3);
+
+    playerGameboard.placeShip(carrier, 0, 0, 'horizontal')
+    playerGameboard.placeShip(cruiser, 5, 6, 'vertical')
+    computerGameboard.placeShip(battleship, 2, 4, 'vertical')
+    
+    playerGameboard.displayShipOnGrid(carrier)
+    playerGameboard.displayShipOnGrid(cruiser)
+    computerGameboard.displayShipOnGrid(battleship)
+
+    computer.takeTurn(0, 0)
+    player.takeTurn(3,4)
+
+
+    
 }
  
 CreateTitleScreen()
