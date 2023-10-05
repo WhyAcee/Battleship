@@ -62,33 +62,24 @@ function gameLoop(name) {
 
     // Display game boards
     playerGameboard.createGrid('player-gameboard', 10, 10)
-    computerGameboard.createGrid('computer-gameboard', 10, 10) 
+    computerGameboard.createGrid('computer-gameboard', 10, 10)
+    console.log(playerGameboardContainer)
    
 
     message.textContent = `Place your ship ${name}.`
 
-    // Create ships
-    const carrier = new Ship('carrier',5)
-    const battleship = new Ship('battleship', 4)
-    const cruiser = new Ship('cruiser', 3);
-
-    playerGameboard.placeShip(carrier, 0, 0, 'horizontal')
-    computerGameboard.placeShip(battleship, 2, 4, 'vertical')
-    computerGameboard.placeShip(cruiser, 0, 0, 'horizontal')
+    playerGameboard.autoPlaceShips()
+    computerGameboard.autoPlaceShips()
     
-    playerGameboard.displayShipOnGrid(carrier)
-    playerGameboard.displayShipOnGrid(cruiser)
-    
-    computerGameboard.displayShipOnGrid(battleship)
-    computerGameboard.displayShipOnGrid(cruiser)
-
-    computer.takeTurn(0, 0)
+    //computer.takeTurn(0, 0)
     player.takeTurn(1, 4)
     
     player.takeTurn(2, 4)
     player.takeTurn(3, 4)
     player.takeTurn(4, 4)
     player.takeTurn(5, 4)
+
+    console.log(playerGameboard.grid)
 
 }
  

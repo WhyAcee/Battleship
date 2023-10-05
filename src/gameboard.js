@@ -53,10 +53,37 @@ export default class Gameboard {
         ship.orientation = orientation;
 
         //Add ship to list of ships on the board
-        console.log(ship)
         this.ships.push(ship);
 
         return true
+    }
+
+    autoPlaceShips() {
+        const ShipsToPlace = [this.carrier, this.battleship, this.cruiser, this.submarine, this.destroyer]
+
+        for (const ship of ShipsToPlace) {
+            let placed = false;
+            let attempts = 0
+
+            while (!placed && attempts < 100) {
+                const randomRow = Math.floor(Math.random() * this.rows);
+                const randomCol = Math.floor(Math.random() * this.cols)
+                const orientation = ['horizontal', 'vertical']
+                const randomOrientation = orientation[Math.floor(Math.random() * 2)]
+
+                if (this.isValidPlacement(ship, randomRow, randomCol, randomOrientation)) {
+                    placed = this.placeShip(ship, randomRow, randomCol, randomOrientation)
+
+                    if (placed) {
+                        this.displayShipOnGrid(ship)
+                    }
+                }
+            }
+
+            if (!placed) {
+                console.log(`Unable to place ${ship.name} after ${attempts} attempts.`);
+            }
+        }
     }
 
     receiveAttack(row, col) {
@@ -122,11 +149,13 @@ export default class Gameboard {
         if (orientation === 'horizontal') {
             for (let i = 0; i < ship.length; i++) {
                 const cell = this.container.querySelector(`[data-row="${row}"][data-col="${col + i}"]`)
+                cell.classList.add(ship.name)
                 cell.classList.add('ship-cell')
             }
         } else if (orientation === 'vertical') {
             for (let i = 0; i < ship.length; i++) {
                 const cell = this.container.querySelector(`[data-row="${row + i}"][data-col="${col}"]`)
+                cell.classList.add(ship.name)
                 cell.classList.add('ship-cell')
             }
         }
