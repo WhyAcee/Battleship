@@ -7,6 +7,13 @@ export default class Gameboard {
         this.container = container
         this.grid = Array(rows).fill().map(() => Array(cols).fill(null));
         this.ships = [];
+
+        this.carrier = new Ship('carrier', 5)
+        this.battleship = new Ship('battleship', 4)
+        this.cruiser = new Ship('cruiser', 3)
+        this.submarine = new Ship('submarine', 3)
+        this.destroyer = new Ship('destroyer', 2)
+
     }
 
     createGrid(containerId, rows, cols) {
@@ -46,6 +53,7 @@ export default class Gameboard {
         ship.orientation = orientation;
 
         //Add ship to list of ships on the board
+        console.log(ship)
         this.ships.push(ship);
 
         return true
@@ -58,7 +66,6 @@ export default class Gameboard {
         }
 
         const shipIndex = this.grid[row][col];
-        console.log(this.grid)
 
         //Check if there's a ship in the cell
         if (shipIndex !== null) {
@@ -67,8 +74,6 @@ export default class Gameboard {
 
             // Mark the cell as 'hit'
             this.grid[row][col] = 'hit';
-            console.log(this.grid[row][col])
-
 
             // Check if the ship has been sunk
             if (shipIndex.isSunk()) {
@@ -125,6 +130,20 @@ export default class Gameboard {
                 cell.classList.add('ship-cell')
             }
         }
+    }
+
+    getSunkenShip(row, col) {
+        const cell = this.container.querySelector(`[data-row="${row}"][data-col="${col}"]`)
+        
+         for (const ship of this.ships) {
+            const shipCells = Array.from(this.container.querySelectorAll(`[data-row="${ship.position.row}"][data-col="${ship.position.col}"]`));
+    
+            if (shipCells.every(shipCell => shipCell.classList.contains('hit'))) {
+                console.log('Ship is sunken:', ship);
+                return ship;
+            } 
+        }
+        return null
     }
 
     allShipsSunk() {
