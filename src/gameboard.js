@@ -51,7 +51,7 @@ export default class Gameboard {
         // Update ship properties
         ship.position = { row, col };
         ship.orientation = orientation;
-
+        
         //Add ship to list of ships on the board
         this.ships.push(ship);
 

@@ -6,7 +6,14 @@ import Player from './player';
 const content = document.querySelector('.content')
 const message = document.querySelector('#message')
 
+const playerGameboardContainer = document.getElementById('player-gameboard');
+const computerGameboardContainer = document.getElementById('computer-gameboard');
 
+const playerGameboard = new Gameboard(10, 10, playerGameboardContainer)
+const computerGameboard = new Gameboard(10, 10, computerGameboardContainer)
+
+const shipsToPlace = [playerGameboard.carrier, playerGameboard.battleship, playerGameboard.cruiser, playerGameboard.submarine, playerGameboard.destroyer]
+let currentShipIndex = 0;
 
 function CreateTitleScreen() {
     message.style.display = 'none'
@@ -47,12 +54,6 @@ function CreateTitleScreen() {
 
 function gameLoop(name) {
 
-    // Create game boards 
-    const playerGameboardContainer = document.getElementById('player-gameboard');
-    const computerGameboardContainer = document.getElementById('computer-gameboard');
-    const playerGameboard = new Gameboard(10, 10, playerGameboardContainer)
-    const computerGameboard = new Gameboard(10, 10, computerGameboardContainer)
-
     // Create Players
     const player = new Player(name, playerGameboard, computerGameboard)
     const computer = new Player('Computer', computerGameboard, playerGameboard)
@@ -66,23 +67,42 @@ function gameLoop(name) {
     console.log(playerGameboardContainer)
    
 
-    message.textContent = `Place your ship ${name}.`
+    message.textContent = `Place your ships ${name}.`
 
-    playerGameboard.autoPlaceShips()
+    //playerGameboard.autoPlaceShips()
     computerGameboard.autoPlaceShips()
     
-    //computer.takeTurn(0, 0)
-    player.takeTurn(1, 4)
-    
-    player.takeTurn(2, 4)
-    player.takeTurn(3, 4)
-    player.takeTurn(4, 4)
-    player.takeTurn(5, 4)
 
     console.log(playerGameboard.grid)
 
 }
  
 CreateTitleScreen()
+
+const clickHandler = (event) => {
+    const cell = event.target
+    const row = parseInt(cell.getAttribute('data-row'))
+    const col = parseInt(cell.getAttribute('data-col'))
+
+    const currentShip = shipsToPlace[currentShipIndex]
+    message.textContent = `Placing ${currentShip.name} (Length: ${currentShip.length})`;
+    
+    const placed = playerGameboard.placeShip(currentShip, row, col, 'horizontal')
+
+    if (placed) {
+        playerGameboard.displayShipOnGrid(currentShip)
+        currentShipIndex++;
+
+        if(currentShipIndex === shipsToPlace.length) {
+            message.textContent = 'Now Attack the Enemy board'
+            playerGameboardContainer.removeEventListener('click', clickHandler )
+        } else {
+            const nextShip = shipsToPlace[currentShipIndex];
+            message.textContent = `Place your ${nextShip.name} (Length: ${nextShip.length})`;
+        }
+    } 
+}
+
+playerGameboardContainer.addEventListener('click', clickHandler)
 
 
