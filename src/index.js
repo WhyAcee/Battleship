@@ -5,6 +5,7 @@ import Player from './player';
 
 const content = document.querySelector('.content')
 const message = document.querySelector('#message')
+const orientationButton = document.querySelector('.orientation-btn')
 
 const playerGameboardContainer = document.getElementById('player-gameboard');
 const computerGameboardContainer = document.getElementById('computer-gameboard');
@@ -14,7 +15,7 @@ const computerGameboard = new Gameboard(10, 10, computerGameboardContainer)
 
 const shipsToPlace = [playerGameboard.carrier, playerGameboard.battleship, playerGameboard.cruiser, playerGameboard.submarine, playerGameboard.destroyer]
 let currentShipIndex = 0;
-let orientation = 'vertical' 
+let orientation = 'horizontal' 
 
 function CreateTitleScreen() {
     message.style.display = 'none'
@@ -65,15 +66,21 @@ function gameLoop(name) {
     // Display game boards
     playerGameboard.createGrid('player-gameboard', 10, 10)
     computerGameboard.createGrid('computer-gameboard', 10, 10)
-    console.log(playerGameboardContainer)
    
-
     message.textContent = `Place your ships ${name}.`
-
     computerGameboard.autoPlaceShips()
-    
 
-    console.log(playerGameboard.grid)
+    computerGameboardContainer.addEventListener('click', (event) => {
+        const cell = event.target
+        
+        if (cell.hasAttribute('data-row') && cell.hasAttribute('data-col')) {
+            const row = parseInt(cell.getAttribute('data-row'))
+            const col = parseInt(cell.getAttribute('data-col'))
+
+            currentPlayer.takeTurn(row, col)
+        }
+    })
+
 
 }
  
@@ -142,3 +149,15 @@ playerGameboardContainer.addEventListener('mouseout', (event) => {
 playerGameboardContainer.addEventListener('click', clickHandler)
 
 playerGameboardContainer.addEventListener('mouseover', hoverHandler)
+
+orientationButton.addEventListener('click', () => {
+    if (orientation === 'horizontal') {
+        orientation = 'vertical'
+        orientationButton.textContent = 'Vertical'
+    } else if (orientation === 'vertical') {
+        orientation = 'horizontal'
+        orientationButton.textContent = 'Horizontal'
+    }
+})
+
+

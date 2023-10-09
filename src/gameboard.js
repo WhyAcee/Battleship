@@ -164,13 +164,14 @@ export default class Gameboard {
     getSunkenShip(row, col) {
         const cell = this.container.querySelector(`[data-row="${row}"][data-col="${col}"]`)
         
-         for (const ship of this.ships) {
+        for (const ship of this.ships) {
             const shipCells = Array.from(this.container.querySelectorAll(`[data-row="${ship.position.row}"][data-col="${ship.position.col}"]`));
-    
-            if (shipCells.every(shipCell => shipCell.classList.contains('hit'))) {
-                console.log('Ship is sunken:', ship);
-                return ship;
-            } 
+            if (!shipCells.some(shipCell => shipCell.classList.contains('sunken-ship'))) {
+                if (shipCells.every(shipCell => shipCell.classList.contains('hit'))) {
+                    console.log('Ship is sunken:', ship);
+                    return ship;
+                }
+            }
         }
         return null
     }

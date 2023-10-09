@@ -18,7 +18,7 @@ body {
     align-items: center;
     justify-items: center;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 4fr;
+    grid-template-rows: 1fr 1fr 1fr;
 }
 
 .title-screen {
@@ -72,12 +72,12 @@ body {
 
 #player-gameboard {
     margin-left: auto;
-    margin-right: 100px;
+    margin-right: 20px;
 }
 
 #computer-gameboard {
     margin-right: auto;
-    margin-left: 100px;
+    margin-left: 20px;
 }
 
 .gameboard-container {
@@ -129,3 +129,25 @@ body {
     font-size: 2.4rem;
 }
 
+.grid-cell.highlighted-cell {
+    background-color: lightgreen;
+    cursor: pointer;
+}
+
+.orientation-btn {
+    display: block;
+    margin-top: 0;
+    grid-area: 3 / 1 / 4 / 3;
+
+    padding: 20px;
+    border-radius: 30px;
+    border: 2px solid black;
+    cursor: pointer;
+    background-color: white;
+}
+
+.orientation-btn:hover {
+    transform: scale(1.1);
+    transition: all 0.5s;
+    background-color: lightgreen;
+}
