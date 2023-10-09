@@ -34,6 +34,7 @@ export default class Player {
             cell.appendChild(marker)
 
             let sunkenShip = this.enemyGameboard.getSunkenShip(row, col)
+            console.log('Has just sank ', sunkenShip)
             if (sunkenShip) {
                 for (let i = 0; i < sunkenShip.length; i++) {
                     let shipRow = sunkenShip.position.row;
