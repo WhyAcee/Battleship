@@ -78,13 +78,14 @@ body {
 #computer-gameboard {
     margin-right: auto;
     margin-left: 20px;
+    cursor: crosshair;
 }
 
 .gameboard-container {
     margin-bottom: auto;
     display: grid;
     grid-template-columns: repeat(10, 40px);
-    grid-gap: 2px
+    grid-gap: 1px
 }
 
 .grid-cell {
@@ -147,6 +148,24 @@ body {
 }
 
 .orientation-btn:hover {
+    transform: scale(1.1);
+    transition: all 0.5s;
+    background-color: lightgreen;
+}
+
+#play-again {
+    display: block;
+    margin-top: 0;
+    grid-area: 3 / 1 / 4 / 3;
+    
+    padding: 20px;
+    border-radius: 30px;
+    border: 2px solid black;
+    cursor: pointer;
+    background-color: white;
+}
+
+#play-again:hover {
     transform: scale(1.1);
     transition: all 0.5s;
     background-color: lightgreen;

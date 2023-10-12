@@ -56,108 +56,176 @@ function CreateTitleScreen() {
 
 function gameLoop(name) {
 
-    // Create Players
+    // Initialize Game
     const player = new Player(name, playerGameboard, computerGameboard)
     const computer = new Player('Computer', computerGameboard, playerGameboard)
 
+    let isShipPlacementPhase = true;
     let gameIsOver = false;
     let currentPlayer = player;
 
-    // Display game boards
     playerGameboard.createGrid('player-gameboard', 10, 10)
     computerGameboard.createGrid('computer-gameboard', 10, 10)
    
     message.textContent = `Place your ships ${name}.`
     computerGameboard.autoPlaceShips()
 
-    computerGameboardContainer.addEventListener('click', (event) => {
+    const attackHandler = (event) => {
+
+        if (isShipPlacementPhase) {
+            message.textContent = "Place all your ships before attacking.";
+            return;
+        }
+
         const cell = event.target
-        
+                
         if (cell.hasAttribute('data-row') && cell.hasAttribute('data-col')) {
             const row = parseInt(cell.getAttribute('data-row'))
             const col = parseInt(cell.getAttribute('data-col'))
 
-            currentPlayer.takeTurn(row, col)
+            player.takeTurn(row, col)
+
+            computerGameboardContainer.removeEventListener('click', attackHandler)
+
+            checkGameEnd()
+
+            currentPlayer = computer
+            computerTurn();
+        }
+    };
+
+    function playerTurn() {
+        if (!gameIsOver && currentPlayer === player) {
+            computerGameboardContainer.addEventListener('click', attackHandler)
+        }
+    }
+
+    function computerTurn() {
+        if (!gameIsOver && currentPlayer === computer) {
+            const randomRow = Math.floor(Math.random() * 10);
+            const randomCol = Math.floor(Math.random() * 10);
+
+            computer.takeTurn(randomRow, randomCol);
+
+            checkGameEnd()
+            currentPlayer = player
+            playerTurn();
+        }
+    }
+    
+    function checkGameEnd() {
+        if (computerGameboard.allShipsSunk() || playerGameboard.allShipsSunk() ) {
+            gameIsOver = true;
+            if (computerGameboard.allShipsSunk()) {
+                message.textContent = 'VICTORY!';
+            } else if (playerGameboard.allShipsSunk()){
+                message.textContent = 'Defeat';
+            }
+            computerGameboardContainer.removeEventListener('click', attackHandler)
+            createPlayAgainBtn()
+        }
+    } 
+
+    function switchToAttackMode() {
+        isShipPlacementPhase = false;
+        orientationButton.remove()
+        message.textContent = "Now, attack the enemy board.";
+        playerTurn();
+    }
+
+    const clickHandler = (event) => {
+        const cell = event.target
+        const row = parseInt(cell.getAttribute('data-row'))
+        const col = parseInt(cell.getAttribute('data-col'))
+
+        const currentShip = shipsToPlace[currentShipIndex]
+        message.textContent = `Place your ${currentShip.name} (Length: ${currentShip.length})`;
+        
+        const placed = playerGameboard.placeShip(currentShip, row, col, orientation)
+
+        if (placed) {
+            playerGameboard.displayShipOnGrid(currentShip)
+            currentShipIndex++;
+            const cellsToClear = playerGameboardContainer.querySelectorAll('.highlighted-cell');
+            cellsToClear.forEach((cell) => {
+                cell.classList.remove('highlighted-cell');
+            }); 
+
+            if(currentShipIndex === shipsToPlace.length) {
+                message.textContent = 'Now Attack the Enemy board'
+                playerGameboardContainer.removeEventListener('click', clickHandler)
+                playerGameboardContainer.removeEventListener('mouseover', hoverHandler)
+            } else {
+                const nextShip = shipsToPlace[currentShipIndex];
+                message.textContent = `Place your ${nextShip.name} (Length: ${nextShip.length})`;
+            }
+        } 
+
+        if (playerGameboard.ships.length === 5) {
+            switchToAttackMode();
+        }
+
+        event.stopPropagation()
+    }
+
+    const hoverHandler = (event) => {
+        const cell = event.target
+        if (cell.hasAttribute('data-row') && cell.hasAttribute('data-col')) {
+            const row = parseInt(cell.getAttribute('data-row'));
+            const col = parseInt(cell.getAttribute('data-col'));
+
+            const currentShip = shipsToPlace[currentShipIndex];
+            const cellsToHighlight = []
+            if (orientation === 'horizontal' && col + currentShip.length <= playerGameboard.cols) {
+                for (let i = 0; i < currentShip.length; i++) {
+                    cellsToHighlight.push(playerGameboardContainer.querySelector(`[data-row="${row}"][data-col="${col + i}"]`))
+                }
+            } else if (orientation === 'vertical' && row + currentShip.length <= playerGameboard.rows) {
+                for (let i = 0; i < currentShip.length; i++) {
+                    cellsToHighlight.push(playerGameboardContainer.querySelector(`[data-row="${row + i}"][data-col="${col}"]`))
+                }
+            }
+
+            cellsToHighlight.forEach((highlightedCell) => {
+                highlightedCell.classList.add('highlighted-cell')
+            })
+        }
+    }
+
+    playerGameboardContainer.addEventListener('mouseout', (event) => {
+    
+        playerGameboardContainer.querySelectorAll('.highlighted-cell').forEach((cell) => {
+        cell.classList.remove('highlighted-cell');
+    });
+    })
+
+    playerGameboardContainer.addEventListener('click', clickHandler)
+
+    playerGameboardContainer.addEventListener('mouseover', hoverHandler)
+
+    orientationButton.addEventListener('click', () => {
+        if (orientation === 'horizontal') {
+            orientation = 'vertical'
+            orientationButton.textContent = 'Vertical'
+        } else if (orientation === 'vertical') {
+            orientation = 'horizontal'
+            orientationButton.textContent = 'Horizontal'
         }
     })
 
+    playerTurn()
 
 }
- 
-CreateTitleScreen()
 
-const clickHandler = (event) => {
-    const cell = event.target
-    const row = parseInt(cell.getAttribute('data-row'))
-    const col = parseInt(cell.getAttribute('data-col'))
+CreateTitleScreen()  
 
-    const currentShip = shipsToPlace[currentShipIndex]
-    message.textContent = `Place your ${currentShip.name} (Length: ${currentShip.length})`;
-    
-    const placed = playerGameboard.placeShip(currentShip, row, col, orientation)
+function createPlayAgainBtn() {
+    const playAgain = document.createElement('button')
+    playAgain.setAttribute('id', 'play-again')
+    playAgain.textContent = 'Play Again'
+    content.appendChild(playAgain)
 
-    if (placed) {
-        playerGameboard.displayShipOnGrid(currentShip)
-        currentShipIndex++;
-        const cellsToClear = playerGameboardContainer.querySelectorAll('.highlighted-cell');
-        cellsToClear.forEach((cell) => {
-            cell.classList.remove('highlighted-cell');
-        }); 
-
-        if(currentShipIndex === shipsToPlace.length) {
-            message.textContent = 'Now Attack the Enemy board'
-            playerGameboardContainer.removeEventListener('click', clickHandler)
-            playerGameboardContainer.removeEventListener('mouseover', hoverHandler)
-        } else {
-            const nextShip = shipsToPlace[currentShipIndex];
-            message.textContent = `Place your ${nextShip.name} (Length: ${nextShip.length})`;
-        }
-    } 
-}
-
-const hoverHandler = (event) => {
-    const cell = event.target
-    if (cell.hasAttribute('data-row') && cell.hasAttribute('data-col')) {
-        const row = parseInt(cell.getAttribute('data-row'));
-        const col = parseInt(cell.getAttribute('data-col'));
-
-        const currentShip = shipsToPlace[currentShipIndex];
-        const cellsToHighlight = []
-        if (orientation === 'horizontal' && col + currentShip.length <= playerGameboard.cols) {
-            for (let i = 0; i < currentShip.length; i++) {
-                cellsToHighlight.push(playerGameboardContainer.querySelector(`[data-row="${row}"][data-col="${col + i}"]`))
-            }
-        } else if (orientation === 'vertical' && row + currentShip.length <= playerGameboard.rows) {
-            for (let i = 0; i < currentShip.length; i++) {
-                cellsToHighlight.push(playerGameboardContainer.querySelector(`[data-row="${row + i}"][data-col="${col}"]`))
-            }
-        }
-
-        cellsToHighlight.forEach((highlightedCell) => {
-            highlightedCell.classList.add('highlighted-cell')
-        })
-    }
-}
-
-playerGameboardContainer.addEventListener('mouseout', (event) => {
-   
-    playerGameboardContainer.querySelectorAll('.highlighted-cell').forEach((cell) => {
-    cell.classList.remove('highlighted-cell');
-  });
-})
-
-playerGameboardContainer.addEventListener('click', clickHandler)
-
-playerGameboardContainer.addEventListener('mouseover', hoverHandler)
-
-orientationButton.addEventListener('click', () => {
-    if (orientation === 'horizontal') {
-        orientation = 'vertical'
-        orientationButton.textContent = 'Vertical'
-    } else if (orientation === 'vertical') {
-        orientation = 'horizontal'
-        orientationButton.textContent = 'Horizontal'
-    }
-})
-
-
+    playAgain.addEventListener('click', () => {
+        location.reload()
+    })
+} 

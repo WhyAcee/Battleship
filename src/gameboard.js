@@ -73,10 +73,6 @@ export default class Gameboard {
 
                 if (this.isValidPlacement(ship, randomRow, randomCol, randomOrientation)) {
                     placed = this.placeShip(ship, randomRow, randomCol, randomOrientation)
-
-                    if (placed) {
-                        this.displayShipOnGrid(ship)
-                    }
                 }
             }
 
@@ -129,7 +125,7 @@ export default class Gameboard {
             for (let i = 0; i < ship.length; i++) {
                 if (this.grid[row][col + i] !== null) {
                     return false
-                }
+                } 
             }
         } else if (orientation === 'vertical') {
             for (let i = 0; i < ship.length; i++) {
@@ -165,11 +161,14 @@ export default class Gameboard {
         const cell = this.container.querySelector(`[data-row="${row}"][data-col="${col}"]`)
         
         for (const ship of this.ships) {
+            // Check if the ship is not already sunken
+            if (ship.isSunk()) {
             const shipCells = Array.from(this.container.querySelectorAll(`[data-row="${ship.position.row}"][data-col="${ship.position.col}"]`));
-            if (!shipCells.some(shipCell => shipCell.classList.contains('sunken-ship'))) {
-                if (shipCells.every(shipCell => shipCell.classList.contains('hit'))) {
-                    console.log('Ship is sunken:', ship);
-                    return ship;
+
+            // Check if all ship cells are marked as "hit"
+                if (shipCells.every(shipCell => shipCell.classList.contains('hit'))
+                && !shipCells.every(shipCell => shipCell.classList.contains('sunken-ship'))) {
+                return ship;
                 }
             }
         }

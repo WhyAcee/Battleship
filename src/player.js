@@ -16,15 +16,14 @@ export default class Player {
     handleAttackResult(result, row, col) {
         const cell = this.enemyGameboard.container.querySelector(`[data-row="${row}"][data-col="${col}"]`);
         const marker = document.createElement('div')
+        let message = document.querySelector('#message')
 
         if (result === 'hit') {
-            console.log(`${this.name} landed a hit at (${row}, ${col})`)
             marker.classList.add('hit-marker');
             cell.classList.add('hit')
             cell.appendChild(marker)
 
         } else if (result === 'miss') {
-            console.log(`${this.name} missed at (${row}, ${col})`)
             marker.classList.add('miss');
             cell.appendChild(marker)
 
@@ -34,13 +33,11 @@ export default class Player {
             cell.appendChild(marker)
 
             let sunkenShip = this.enemyGameboard.getSunkenShip(row, col)
-            console.log('Has just sank ', sunkenShip)
             if (sunkenShip) {
                 for (let i = 0; i < sunkenShip.length; i++) {
                     let shipRow = sunkenShip.position.row;
                     let shipCol = sunkenShip.position.col;
                     let orientation = sunkenShip.orientation
-                    console.log(`shipRow: ${shipRow}, shipCol: ${shipCol}`)
 
                     if (orientation === 'horizontal') {
                         shipCol += i;
