@@ -49,8 +49,6 @@ export default class Player {
                     shipCell.classList.add('sunken-ship')
                 }
             }
-        } else if (result === 'duplicate') {
-            console.log(`${this.name} has already attacked (${row}, ${col})`)
-        }
+        } 
     }
 }

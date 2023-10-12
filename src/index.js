@@ -105,11 +105,13 @@ function gameLoop(name) {
             const randomRow = Math.floor(Math.random() * 10);
             const randomCol = Math.floor(Math.random() * 10);
 
-            computer.takeTurn(randomRow, randomCol);
-
+            if (computer.takeTurn(randomRow, randomCol) === 'duplicate') {
+               return computerTurn()
+            }
+            
             checkGameEnd()
             currentPlayer = player
-            playerTurn();
+            playerTurn();  
         }
     }
     
